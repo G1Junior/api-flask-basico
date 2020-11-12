@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+
+    <script src="jquery-3.5.1.min.js"></script>
+
+    <script>
+
+        // Vetor JSON
+        let clientes = []
+
+
+        // Após carregar o HTML e CSS
+    $(document).ready(function(){
+        obterDados()
+       
+
+    })
+
+    // Obter dados
+    function obterDados(){
+         // Obter todos os dados da API
+         $.ajax({
+            url:'http://127.0.0.1:5000/',
+            type:'GET',
+            success:function(resultado){
+                clientes = resultado
+                Listar()             
+            }
+        })
+    }
+
+    //Listar dados na tabela
+    function Listar(){
+
+        //Selecionar a tabela
+        let tabela = document.getElementById("tabela")
+
+        //Limpar tabela
+        tabela.innerHTML = ""
+
+        //laço
+        for(let indice=0; indice<clientes.length; indice++){
+        
+        //Criar nova linha (-1 Ultima posição)
+        let linha = tabela.insertRow(-1)
+
+        //Criar quatro colunas
+        let coluna1 = linha.insertCell(0)
+        let coluna2 = linha.insertCell(1)
+        let coluna3 = linha.insertCell(2)
+        let coluna4 = linha.insertCell(3)
+
+        // Conteudos das células
+        coluna1.innerHTML = clientes[indice].codigo
+        coluna2.innerHTML = clientes[indice].nome
+        coluna3.innerHTML = clientes[indice].idade
+        coluna4.innerHTML = "<button OnClick='remover("+indice+")' class='btn'>Remover</button>"
+
+    }
+    }
+
+    //Remover cliente
+    function remover(indice){
+        $.ajax({
+            url:'http://127.0.0.1:5000/'+clientes[indice].codigo,
+            type:'DELETE',
+            success:function(retorno){
+                alert(retorno.mensagem)
+                obterDados()
+                Listar()
+            }
+
+        })
+    }
+
+    //Cadastrar cliente
+    function cadastrar(){
+
+        let nome = document.getElementById("nome").value
+        let idade = document.getElementById("idade").value
+
+        if(nome == ""){
+            alert("Favor preencher o campo nome")
+        }else if(idade == ""){
+            alert("Favor preencher o campo idade")
+        }else{
+
+            $.ajax({
+                url:'http://127.0.0.1:5000/',
+                type:'POST',
+                data: {"nome":nome, "idade":idade},
+                success:function(retorno){
+                    alert(retorno.mensagem)
+                    obterDados()
+                }
+
+            })
+        }
+    }
+
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col s6 offset-s3">
+                <form>
+                    <input type="text" placeholder="Informe um nome" id="nome">
+                    <input type="text" placeholder="Informe uma idade" id="idade">
+                    <input type="button" value="Cadastrar" onclick="cadastrar()" class="btn">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <table style="margin-top: 50px;">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nome</th>
+                <th>Idade</th>
+                <th>Remover</th>
+            </tr>
+        </thead>
+
+        <tbody id="tabela"></tbody>
+    </table>
+
+
+
+</body>
+</html>
