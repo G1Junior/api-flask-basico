@@ -12,3 +12,5 @@
    <li>jQuery</li>
    <li>Materialize</li>
 </ul>
+
+<p>Atualizado em: 12/11/2020.</p>
